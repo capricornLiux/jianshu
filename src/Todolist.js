@@ -1,5 +1,8 @@
 import React from 'react'
 import './style.css'
+
+import TodoItem from './TodoItem.js'
+
 /* 替代包裹div, 不会再dom中渲染 */
 const Fragment = React.Fragment
 class Todolist extends React.Component {
@@ -26,12 +29,21 @@ class Todolist extends React.Component {
                 <ul>
                     {
                         this.state.list.map((currentValue, index, arr) => {
-                            return <li 
+                            return (
+                                <div>
+                                    {/* <li 
                                         key={index} 
                                         onClick={this.handleItemClick.bind(this, index)}
                                         dangerouslySetInnerHTML={{__html: currentValue}}
                                     >
-                                    </li>
+                                    </li> */}
+                                    <TodoItem 
+                                      content={currentValue} 
+                                      index={index}  
+                                      deleteItem={this.handleItemClick}
+                                    />
+                                </div>
+                            )
                         })
                         /* react循环渲染的时候, 渲染出的每一项需要添加一个key值, 实际编程中不要用index做key值 */
                         /* 这个key最终不会渲染到DOM中 */
@@ -59,7 +71,7 @@ class Todolist extends React.Component {
     }
 
     // 点击item的时候删除这个item
-    handleItemClick (index, e) {
+    handleItemClick (index) {
         /* console.log(e.target)
         console.log(index) */
         // 从数组中删除
