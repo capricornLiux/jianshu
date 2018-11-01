@@ -5,6 +5,8 @@ import './index.css'
 import store from './store/index.js'
 import TodoListUI from './TodoListUI.js'
 
+import axios from 'axios'
+
 import {
     getInputChangeAction, 
     getAddTodoItemAction, 
@@ -33,6 +35,12 @@ class Todolist extends Component {
             />
         )
     }
+    componentDidMount () {
+        axios.get('/todolist.json').then((res) => {
+            console.log('res')
+            console.log(res)
+        })
+    }
     handleInputChange(e) {
         const action = getInputChangeAction(e.target.value)
         store.dispatch(action)
@@ -46,8 +54,6 @@ class Todolist extends Component {
     }
     /* item点击输出 */
     handleItemClick(index) {
-        console.log('hello')
-        console.log(index)
         const action = getDeleteTodoItemAction(index)
         store.dispatch(action)
     }
