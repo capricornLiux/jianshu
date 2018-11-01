@@ -1,106 +1,69 @@
-import React, { Component, Fragment } from 'react'
-import './style.css'
-import TodoItem from './TodoItem.js'
+import React, { Component } from 'react'
+import 'antd/dist/antd.css';
+import { Input, Button, List } from 'antd';
+import './index.css'
+import store from './store/index.js'
+/* import {
+    CHANGE_INPUT_VALUE,
+    ADD_TODO_ITEM,
+    DELETE_TODO_ITEM
+} from './store/actionTypes.js' */
 
-/* 替代包裹div, 不会再dom中渲染 */
+import {
+    getInputChangeAction, 
+    getAddTodoItemAction, 
+    getDeleteTodoItemAction
+} from './store/actionCreators.js'
 
+/* const data = [
+    'Racing car sprays burning fuel into crowd.',
+    'Japanese princess to wed commoner.',
+    'Australian walks 100km after outback crash.',
+    'Man charged over missing wedding girl.',
+    'Los Angeles battles huge wildfires.',
+]; */
 class Todolist extends Component {
     constructor (props) {
         super(props)
-        this.state = {
-            inputValue: '',
-            list: []
-        }
+        this.state = store.getState()
         this.handleInputChange = this.handleInputChange.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleItemClick = this.handleItemClick.bind(this)
+        this.handleSubscribe = this.handleSubscribe.bind(this)
+        this.handleBtnClick = this.handleBtnClick.bind(this)
+        /* 订阅 */
+        store.subscribe(this.handleSubscribe)
     }
     render () {
         return (
-            <Fragment>
-                <div>
-                    <label htmlFor="textArea">输入内容</label>
-                    <input type="text" 
-                        value={this.state.inputValue}
-                        onChange={this.handleInputChange}
-                        className="input"
-                        id="textArea"
-                    />
-                    <button onClick={this.handleSubmit}>提交</button>
-                </div>
-                <ul>
-                    {this.getTodoItem()}
-                        {/* react循环渲染的时候, 渲染出的每一项需要添加一个key值, 实际编程中不要用index做key值 */
-                         /* 这个key最终不会渲染到DOM中 */}
-                </ul>
-            </Fragment>
+            <div className="example">
+                <Input 
+                    placeholder="test" 
+                    value={this.state.inputValue}
+                    onChange={this.handleInputChange}
+                />
+                <Button type="primary" onClick={this.handleBtnClick}>提交</Button>
+                <List
+                    bordered
+                    dataSource={this.state.list}
+                    renderItem={(item, index) => (<List.Item onClick={this.handleItemClick.bind(this, index)}>{item}</List.Item>)}
+                />
+            </div>
         )
     }
-    getTodoItem() {
-        return this.state.list.map((currentValue, index, arr) => {
-            return (
-                <TodoItem 
-                    key={index}
-                    content={currentValue} 
-                    index={index}  
-                    deleteItem={this.handleItemClick}
-                />
-            )
-        })
-    }
     handleInputChange(e) {
-        // console.log(this) // undefined
-        // this.state.inputValue = e.target.value
-        /* this.setState({
-            inputValue: e.target.value
-        }) */
-
-        /* 新版的react写法 */
-        /* 异步设置数据 */
-        const value = e.target.value
-        this.setState(() => {
-            return {
-                inputValue: value
-            }
-        })
+        const action = getInputChangeAction(e.target.value)
+        store.dispatch(action)
     }
-
-    // 点击提交按钮的时候调用
-    handleSubmit (e) {
-        // 点击按钮的时候
-        /* this.setState({
-            list: [...this.state.list, this.state.inputValue],
-            inputValue: ''
-        }) */
-        // 使用拓展运算符拓展list
-        this.setState((prevState) => {
-            return {
-                list: [...prevState.list, prevState.inputValue],
-                inputValue: ''
-            }
-        })
+    handleSubscribe(){
+        this.setState(store.getState())
     }
-
-    // 点击item的时候删除这个item
-    handleItemClick (index) {
-        /* console.log(e.target)
-        console.log(index) */
-        // 从数组中删除 
-        /* const list = [...this.state.list] // copy list
-        list.splice(index, 1) // splice方法改变list
-        this.setState({
-            list: list
-        }) */
-        
-        // react中immutable的概念, state不允许做任何改变, 修改变量可以修改变量的副本, 而不是直接操作变量
-        // 违反这个规则的时候回对react的优化产生影响
-        this.setState((prevState) => {
-            const list = [...prevState.list]
-            list.splice(index, 1)
-            return {
-                list: list
-            }
-        })
+    handleBtnClick(e) {
+        const action = getAddTodoItemAction()
+        store.dispatch(action)
+    }
+    /* item点击输出 */
+    handleItemClick(index) {
+        const action = getDeleteTodoItemAction(index)
+        store.dispatch(action)
     }
 }
 
