@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
 import 'antd/dist/antd.css';
-import { Input, Button, List } from 'antd';
+
 import './index.css'
 import store from './store/index.js'
-/* import {
-    CHANGE_INPUT_VALUE,
-    ADD_TODO_ITEM,
-    DELETE_TODO_ITEM
-} from './store/actionTypes.js' */
+import TodoListUI from './TodoListUI.js'
 
 import {
     getInputChangeAction, 
@@ -15,13 +11,6 @@ import {
     getDeleteTodoItemAction
 } from './store/actionCreators.js'
 
-/* const data = [
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',
-]; */
 class Todolist extends Component {
     constructor (props) {
         super(props)
@@ -29,24 +18,19 @@ class Todolist extends Component {
         this.handleInputChange = this.handleInputChange.bind(this)
         this.handleSubscribe = this.handleSubscribe.bind(this)
         this.handleBtnClick = this.handleBtnClick.bind(this)
+        this.handleItemClick = this.handleItemClick.bind(this)
         /* 订阅 */
         store.subscribe(this.handleSubscribe)
     }
     render () {
         return (
-            <div className="example">
-                <Input 
-                    placeholder="test" 
-                    value={this.state.inputValue}
-                    onChange={this.handleInputChange}
-                />
-                <Button type="primary" onClick={this.handleBtnClick}>提交</Button>
-                <List
-                    bordered
-                    dataSource={this.state.list}
-                    renderItem={(item, index) => (<List.Item onClick={this.handleItemClick.bind(this, index)}>{item}</List.Item>)}
-                />
-            </div>
+            <TodoListUI 
+                inputValue={this.state.inputValue} 
+                handleInputChange={this.handleInputChange}
+                handleBtnClick={this.handleBtnClick}
+                list={this.state.list}
+                handleItemClick={this.handleItemClick}
+            />
         )
     }
     handleInputChange(e) {
@@ -62,6 +46,8 @@ class Todolist extends Component {
     }
     /* item点击输出 */
     handleItemClick(index) {
+        console.log('hello')
+        console.log(index)
         const action = getDeleteTodoItemAction(index)
         store.dispatch(action)
     }

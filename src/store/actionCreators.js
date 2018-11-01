@@ -18,6 +18,8 @@ const getAddTodoItemAction = () => {
 }
 
 const getDeleteTodoItemAction = (index) => {
+    console.log('1')
+    console.log(index)
     return {
         type: DELETE_TODO_ITEM,
         index
